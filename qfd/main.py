@@ -28,9 +28,10 @@ dictConfig(
 app = Flask(__name__)
 
 
-# Imports des routes TODO
 @app.route("/")
 def index():
+    """This is the main page. It checks if a user already has a name, gives them one
+    if needed, and redirects to either local_vote or distant_vote"""
     app.logger.info("got a hit on index")
     return ""
 
