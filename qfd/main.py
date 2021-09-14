@@ -64,8 +64,9 @@ def index():
     return resp
 
 
-@app.route("/local_vote")
+@app.route("/local/vote")
 def local_vote():
+    """Displays the page where local players vote."""
     if request.cookies.get("id") is None:
         app.logger.info(
             f"{request.remote_addr} hit /local_vote without having a cookie"
@@ -73,7 +74,25 @@ def local_vote():
         # TODO this is probably worth monitoring
         return "Please auth", 403
 
+    # TODO reduce the parts of the state being passed to the
+    # template to minimum
     return render_template("local_vote.html", state=app.config["STATE"])
+
+
+@app.route("/local/vote_result")
+def local_vote_result():
+    """Displays the page that appears once local players have voted"""
+    return "", 200
+
+
+@app.route("/distant/vote")
+def distant_vote():
+    return "", 200
+
+
+@app.route("/distant/vote_result")
+def distant_vote_result():
+    return "", 200
 
 
 @app.route("/state")
