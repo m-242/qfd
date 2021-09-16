@@ -11,3 +11,9 @@ If they win, they win a few points and the ones with the most points get to be o
 Players connect to a server, using one of two ways:
  - If they are "local", they are considered to be together around one big screen and a few speakers, and use their device (for instance a smartphone) to give their answer.
  - If they are "distant", they get the bird songs on their personal player.
+
+# TODO
+purge cookies
+birdsong upload
+analyse and equalize songs
+

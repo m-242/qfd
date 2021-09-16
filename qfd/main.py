@@ -2,7 +2,7 @@
 from flask import Flask, redirect, url_for, request, make_response, render_template
 import uuid
 import datetime
-from helpers import generate_player_name, check_cookie_validity
+from helpers import generate_player_name, check_cookie_validity, reduce_state_local_vote
 
 ## Setting up a proper Flask logging
 from logging.config import dictConfig
@@ -74,19 +74,22 @@ def local_vote():
         # TODO this is probably worth monitoring
         return "Please auth", 403
 
-    # TODO reduce the parts of the state being passed to the
-    # template to minimum
-    return render_template("local_vote.html", state=app.config["STATE"])
+    # TODO definition in case alternative frontend
+    return render_template(
+        "local_vote.html", state=reduce_state_local_vote(app.config["STATE"])
+    )
 
 
 @app.route("/local/vote_result")
 def local_vote_result():
     """Displays the page that appears once local players have voted"""
+    # TODO business logic
     return "", 200
 
 
 @app.route("/distant/vote")
 def distant_vote():
+    # TODO auth
     return "", 200
 
 
@@ -109,14 +112,49 @@ def state():
     return app.config["STATE"]
 
 
-# TODO doc of STATE
+# State contains the current question, and a player list, like so:
+#
+# {
+#   "qcm": {
+#     "question": {
+#       "file": "...",
+#       "label": "...",
+#       "image": "..."
+#     },
+#     "answers": [
+#       {
+#         "label": "...",
+#         "file": "..."
+#       },
+#       {
+#         "label": "...",
+#         "file": "..."
+#       }
+#     ],
+#     "right_answer": "..."
+#   },
+#   "players": {
+#     "UUID": {
+#       "name": "name",
+#       "score": 0,
+#       "last_active": "datetime object",
+#       "is_local": "boolean"
+#     }
+#   }
+# }
 
 
 if __name__ == "__main__":
     # TODO Init
 
-    # TODO using config to hold state isn't great, but I don't have a better
+    # FIXME using config to hold state isn't great, but I don't have a better
     # idea
-    app.config["STATE"] = {"question": {}, "players": {}}
+    app.config["STATE"] = {"qcm": {}, "players": {}}
+
+    # TODO this is a mock
+    app.config["STATE"]["qcm"]["answers"] = [
+        {"label": "a", "file": "..."},
+        {"label": "b", "file": "..."},
+    ]
 
     app.run(debug=True, host="0.0.0.0")

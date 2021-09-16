@@ -7,6 +7,13 @@ import datetime
 import uuid
 
 
+def reduce_state_local_vote(state):
+    """Removes parts of the state a player that hasn't voted yet should have access to.
+    Basically returns the labels of question choices"""
+    choices = [i["label"] for i in state["qcm"]["answers"]]
+    return choices
+
+
 def check_cookie_validity(cookie, state):
     """This function gets passed an id, and the state, and returns True
     if the cookie exists, and has not expired"""
