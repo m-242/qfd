@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 from flask import Flask, redirect, url_for, request, make_response, render_template
-import uuid
-import datetime
+import uuid, datetime, threading, time
 from helpers import (
     check_answer_result,
     generate_player_name,
@@ -131,6 +130,26 @@ def state():
     return app.config["STATE"]
 
 
+@app.before_first_request
+def question_updating_thread():
+    def update_question():
+        while True:
+            # TODO logging
+            # TODO update the question
+            time.sleep(300)
+
+    thread = threading.Thread(target=update_question)
+    thread.start()
+
+
+@app.before_first_request
+def load_data():
+    """This loads all needed data into the app, and sets up everything properly"""
+    # TODO logging
+
+    app.config["DATA"] = read_data_json(url_for("static", filename="/data/data.json"))
+
+
 # State contains the current question, and a player list, like so:
 #
 # {
@@ -166,6 +185,9 @@ def state():
 if __name__ == "__main__":
     # TODO Init
 
+    # Loading data
+    # app.config["DATA"] = read_data_json()
+
     # FIXME using config to hold state isn't great, but I don't have a better
     # idea
     app.config["STATE"] = {"qcm": {}, "players": {}}
@@ -177,4 +199,5 @@ if __name__ == "__main__":
     ]
     app.config["STATE"]["qcm"]["correct_answer"] = "a"
 
+    question_updating_thread()
     app.run(debug=True, host="0.0.0.0")
