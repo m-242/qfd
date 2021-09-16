@@ -14,6 +14,13 @@ def reduce_state_local_vote(state):
     return choices
 
 
+def check_answer_result(state, answer):
+    """This sanitises the answer coming directly from the user and returns if
+    it is the right answer or not."""
+    # TODO Sanitize
+    return answer is not None and answer == state["qcm"]["correct_answer"]
+
+
 def check_cookie_validity(cookie, state):
     """This function gets passed an id, and the state, and returns True
     if the cookie exists, and has not expired"""

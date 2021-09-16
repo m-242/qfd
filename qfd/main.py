@@ -2,7 +2,12 @@
 from flask import Flask, redirect, url_for, request, make_response, render_template
 import uuid
 import datetime
-from helpers import generate_player_name, check_cookie_validity, reduce_state_local_vote
+from helpers import (
+    check_answer_result,
+    generate_player_name,
+    check_cookie_validity,
+    reduce_state_local_vote,
+)
 
 ## Setting up a proper Flask logging
 from logging.config import dictConfig
@@ -83,8 +88,22 @@ def local_vote():
 @app.route("/local/vote_result")
 def local_vote_result():
     """Displays the page that appears once local players have voted"""
-    # TODO business logic
-    return "", 200
+    if request.cookies.get("id") is None:
+        app.logger.info(
+            f"{request.remote_addr} hit /local_vote without having a cookie"
+        )
+        # TODO this is probably worth monitoring
+        return "Please auth", 403
+
+    try:
+        return render_template(
+            "local_vote_result.html",
+            state=app.config["STATE"],
+            res=check_answer_result(app.config["STATE"], request.args["choice"]),
+        )
+    except:
+        # TODO proper answer and logging
+        return "brokennnnn", 404
 
 
 @app.route("/distant/vote")
@@ -131,7 +150,7 @@ def state():
 #         "file": "..."
 #       }
 #     ],
-#     "right_answer": "..."
+#     "correct_answer": "..."
 #   },
 #   "players": {
 #     "UUID": {
@@ -156,5 +175,6 @@ if __name__ == "__main__":
         {"label": "a", "file": "..."},
         {"label": "b", "file": "..."},
     ]
+    app.config["STATE"]["qcm"]["correct_answer"] = "a"
 
     app.run(debug=True, host="0.0.0.0")
