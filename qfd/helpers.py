@@ -18,7 +18,7 @@ def check_answer_result(state, answer):
     """This sanitises the answer coming directly from the user and returns if
     it is the right answer or not."""
     # TODO Sanitize
-    return answer is not None and answer == state["qcm"]["correct_answer"]
+    return answer is not None and answer in state["qcm"]["correct_answer"]
 
 
 def check_cookie_validity(cookie, state):

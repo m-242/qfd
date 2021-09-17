@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
 from flask import Flask, redirect, url_for, request, make_response, render_template
 import uuid, datetime, threading, time
+
+
 from helpers import (
     check_answer_result,
     generate_player_name,
     check_cookie_validity,
     reduce_state_local_vote,
 )
+from data import read_data_from_json, generate_question
 
 ## Setting up a proper Flask logging
 from logging.config import dictConfig
@@ -91,8 +94,9 @@ def local_vote_result():
         app.logger.info(
             f"{request.remote_addr} hit /local_vote without having a cookie"
         )
-        # TODO this is probably worth monitoring
         return "Please auth", 403
+
+    # TODO count points
 
     try:
         return render_template(
@@ -100,8 +104,11 @@ def local_vote_result():
             state=app.config["STATE"],
             res=check_answer_result(app.config["STATE"], request.args["choice"]),
         )
-    except:
+    except e:
         # TODO proper answer and logging
+        app.logger.warn(
+            "Got an error at local vote:\n\nrequest:{}\n\nerror:{}".format(request, e)
+        )
         return "brokennnnn", 404
 
 
@@ -132,22 +139,16 @@ def state():
 
 @app.before_first_request
 def question_updating_thread():
+    app.config["DATA"] = read_data_from_json(app.config["DATA_DIR"] + "/data.json")
+
     def update_question():
         while True:
-            # TODO logging
-            # TODO update the question
+            app.config["STATE"]["qcm"] = generate_question(app.config["DATA"])
+            app.logger.info("New question: {}".format(app.config["STATE"]["qcm"]))
             time.sleep(300)
 
     thread = threading.Thread(target=update_question)
     thread.start()
-
-
-@app.before_first_request
-def load_data():
-    """This loads all needed data into the app, and sets up everything properly"""
-    # TODO logging
-
-    app.config["DATA"] = read_data_json(url_for("static", filename="/data/data.json"))
 
 
 # State contains the current question, and a player list, like so:
@@ -169,7 +170,7 @@ def load_data():
 #         "file": "..."
 #       }
 #     ],
-#     "correct_answer": "..."
+#     "correct_answers": ["...", "..."]
 #   },
 #   "players": {
 #     "UUID": {
@@ -183,10 +184,8 @@ def load_data():
 
 
 if __name__ == "__main__":
-    # TODO Init
-
-    # Loading data
-    # app.config["DATA"] = read_data_json()
+    # TODO proper config
+    app.config["DATA_DIR"] = "./static/data/"
 
     # FIXME using config to hold state isn't great, but I don't have a better
     # idea
@@ -197,7 +196,7 @@ if __name__ == "__main__":
         {"label": "a", "file": "..."},
         {"label": "b", "file": "..."},
     ]
-    app.config["STATE"]["qcm"]["correct_answer"] = "a"
+    app.config["STATE"]["qcm"]["correct_answers"] = ["a"]
 
     question_updating_thread()
     app.run(debug=True, host="0.0.0.0")
