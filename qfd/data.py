@@ -2,13 +2,24 @@
 
 # This files contains everything the qfd server uses to generate questions.
 
-import json, random
+import json, random, datetime
 
 
 def read_data_from_json(path):
     """This reads json and returns it"""
     with open(path, "r") as f:
         return json.load(f)
+
+def check_answer_result(player_id, choice, state):
+    """ checks that a player hasn't already answered, has made a reasonable answer, and if it is correct"""
+    if state[player_id]["last_active"] > state["qcm"]["generation_time"]:
+        # already answered
+        return False
+
+    if choice is not None:
+        return choice in state["qcm"]["correct_answers"]
+    
+    return False
 
 
 def generate_question(data):
@@ -53,4 +64,5 @@ def generate_question(data):
         "question": question,
         "answers": answers,
         "correct_answers": correct_answers,
+        "generation_time": datetime.datetime.now(),
     }

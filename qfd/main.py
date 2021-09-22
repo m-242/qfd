@@ -45,7 +45,7 @@ def index():
     # The user exists
     # Gotta play everyday to keep the cookie
     if check_cookie_validity(id_cookie, app.config["STATE"]):
-        app.config["STATE"]["players"]["last_active"] = datetime.now()
+        app.config["STATE"]["players"]["last_active"] = datetime.datetime.now()
         if app.config["STATE"]["players"]["is_local"]:
             app.logger.debug(f"local player {uuid.UUID(id_cookie)} joined back")
             return redirect(url_for("local_vote"))
@@ -58,7 +58,7 @@ def index():
     player = {
         "name": generate_player_name(),
         "score": 0,
-        "last_active": datetime.datetime.now(),
+        "last_active": datetime.datetime(1970, 1, 1),
         "is_local": True,
     }
     app.config["STATE"]["players"][player_id] = player
@@ -90,24 +90,30 @@ def local_vote():
 @app.route("/local/vote_result")
 def local_vote_result():
     """Displays the page that appears once local players have voted"""
-    if request.cookies.get("id") is None:
+    player_id = request.cookies.get("id")
+    if player_id is None:
         app.logger.info(
             f"{request.remote_addr} hit /local_vote without having a cookie"
         )
         return "Please auth", 403
+    
+    # TODO check if already answered
+    win = check_answer_result(player_id, request.args.get("choice"), app.config["STATE"]) 
+    if win:
+        app.config["STATE"]["player"][player_id]["score"] += 10
 
-    # TODO count points
+    app.config["STATE"]["player"][player_id]["last_active"] = datetime.datetime.now()
 
     try:
         return render_template(
             "local_vote_result.html",
             state=app.config["STATE"],
-            res=check_answer_result(app.config["STATE"], request.args["choice"]),
+            res=win,
         )
-    except e:
-        # TODO proper answer and logging
+    except:
+        # TODO proper answer
         app.logger.warn(
-            "Got an error at local vote:\n\nrequest:{}\n\nerror:{}".format(request, e)
+            "Got an error at local vote:\n\nrequest:{}".format(request)
         )
         return "brokennnnn", 404
 
@@ -171,6 +177,7 @@ def question_updating_thread():
 #       }
 #     ],
 #     "correct_answers": ["...", "..."]
+#     "generation_time": datetime object,
 #   },
 #   "players": {
 #     "UUID": {
