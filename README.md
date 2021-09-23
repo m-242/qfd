@@ -17,3 +17,6 @@ purge cookies
 birdsong upload
 analyse and equalize songs
 
+# Adding songs in the database
+To add songs, put the extracts in `static/data/new` and send usr1 to
+the running server processus

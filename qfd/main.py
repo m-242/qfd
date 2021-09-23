@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from flask import Flask, redirect, url_for, request, make_response, render_template
-import uuid, datetime, threading, time
+import uuid, datetime, threading, time, signal
 
 
 from helpers import (
@@ -10,6 +10,7 @@ from helpers import (
     reduce_state_local_vote,
 )
 from data import read_data_from_json, generate_question
+from update import update_songs_database
 
 ## Setting up a proper Flask logging
 from logging.config import dictConfig
@@ -189,8 +190,15 @@ def question_updating_thread():
 #   }
 # }
 
+def signal_update_handler(s, f):
+    app.config["DATA"] = update_songs_database(
+            app.config["DATA"],
+            app.config["DATA_DIR"] + "/new/")
+
 
 if __name__ == "__main__":
+    signal.signal(signal.SIGUSR1, signal_update_handler)
+
     # TODO proper config
     app.config["DATA_DIR"] = "./static/data/"
 
