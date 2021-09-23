@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from flask import Flask, redirect, url_for, request, make_response, render_template
-import uuid, datetime, threading, time, signal
+import uuid, datetime, threading, time, signal, os
 
 
 from helpers import (
@@ -10,7 +10,7 @@ from helpers import (
     reduce_state_local_vote,
 )
 from data import read_data_from_json, generate_question
-from update import update_songs_database
+from update import update_songs_database, load_model
 
 ## Setting up a proper Flask logging
 from logging.config import dictConfig
@@ -147,6 +147,7 @@ def state():
 @app.before_first_request
 def question_updating_thread():
     app.config["DATA"] = read_data_from_json(app.config["DATA_DIR"] + "/data.json")
+    app.logger.info(os.getpid())
 
     def update_question():
         while True:
@@ -191,16 +192,20 @@ def question_updating_thread():
 # }
 
 def signal_update_handler(s, f):
+    app.logger.info("Got signal, analyzing new files...")
     app.config["DATA"] = update_songs_database(
             app.config["DATA"],
-            app.config["DATA_DIR"] + "/new/")
+            app.config["DATA_DIR"] + "/new/",
+            app.config["MODEL"])
 
 
 if __name__ == "__main__":
+    print("q")
     signal.signal(signal.SIGUSR1, signal_update_handler)
 
     # TODO proper config
     app.config["DATA_DIR"] = "./static/data/"
+    app.config["MODEL"] = load_model("./static/model/")
 
     # FIXME using config to hold state isn't great, but I don't have a better
     # idea
