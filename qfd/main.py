@@ -191,32 +191,23 @@ def question_updating_thread():
 #   }
 # }
 
-def signal_update_handler(s, f):
-    app.logger.info("Got signal, analyzing new files...")
-    app.config["DATA"] = update_songs_database(
-            app.config["DATA"],
-            app.config["DATA_DIR"] + "/new/",
-            app.config["MODEL"])
+## def signal_update_handler(s, f):
+##     app.logger.info("Got signal, analyzing new files...")
+##     app.config["DATA"] = update_songs_database(
+##             app.config["DATA"],
+##             app.config["DATA_DIR"] + "/new/",
+##             app.config["MODEL"])
 
 
 if __name__ == "__main__":
-    print("q")
-    signal.signal(signal.SIGUSR1, signal_update_handler)
+##    signal.signal(signal.SIGUSR1, signal_update_handler)
 
     # TODO proper config
     app.config["DATA_DIR"] = "./static/data/"
-    app.config["MODEL"] = load_model("./static/model/")
+##    app.config["MODEL"] = load_model("./static/model/")
+    
 
-    # FIXME using config to hold state isn't great, but I don't have a better
-    # idea
     app.config["STATE"] = {"qcm": {}, "players": {}}
-
-    # TODO this is a mock
-    app.config["STATE"]["qcm"]["answers"] = [
-        {"label": "a", "file": "..."},
-        {"label": "b", "file": "..."},
-    ]
-    app.config["STATE"]["qcm"]["correct_answers"] = ["a"]
 
     question_updating_thread()
     app.run(debug=True, host="0.0.0.0")
