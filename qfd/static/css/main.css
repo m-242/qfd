@@ -1,0 +1,33 @@
+/* player list */
+.players_list {
+    display: flex;  /* Remove bullet points; allow greater control of positioning */
+    flex-wrap: wrap;
+    flex-direction: row;
+    margin: 1em;
+    border-radius: .5em;
+}
+
+.players_list .player_card {
+    margin: .05em;
+    border: .1em solid black;
+    border-radius: .5em;
+    padding:.5em;
+    width: 20em; /* TODO limit nick size */
+    text-align: center;
+}
+
+.players_list .distant {
+	background: #8C5189;
+	color: white;
+}
+
+.players_list .local {
+	background: #00A891;
+	color: white;
+}
+
+@media (max-width: 800) {
+    .players_list {
+        flex-direction: column;
+    }
+}

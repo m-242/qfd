@@ -1,5 +1,13 @@
 {% extends "base.html" %}
 
 {% block content %}
-	{{ state }}
+	{% for ans in state.qcm.answers %}
+		<input type="radio" id={{ ans.label }} name="choice" value={{ ans.label }}></input>
+		<label for={{ ans.label }}>
+			<audio controls>
+					<source src=/static/data/{{ ans.file }} type="audio/ogg">
+			</audio>
+		</label>
+
+	{% endfor %}
 {% endblock %}}

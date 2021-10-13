@@ -10,7 +10,7 @@ from helpers import (
     reduce_state_local_vote,
 )
 from data import read_data_from_json, generate_question
-from update import update_songs_database, load_model
+#from update import update_songs_database, load_model
 
 ## Setting up a proper Flask logging
 from logging.config import dictConfig
@@ -84,7 +84,7 @@ def local_vote():
 
     # TODO definition in case alternative frontend
     return render_template(
-        "local_vote.html", state=reduce_state_local_vote(app.config["STATE"])
+        "local_vote.html", state=app.config["STATE"]
     )
 
 
@@ -191,20 +191,20 @@ def question_updating_thread():
 #   }
 # }
 
-def signal_update_handler(s, f):
-    app.logger.info("Got signal, analyzing new files...")
-    app.config["DATA"] = update_songs_database(
-            app.config["DATA"],
-            app.config["DATA_DIR"] + "/new/",
-            app.config["MODEL"])
+#def signal_update_handler(s, f):
+#    app.logger.info("Got signal, analyzing new files...")
+#    app.config["DATA"] = update_songs_database(
+#            app.config["DATA"],
+#            app.config["DATA_DIR"] + "/new/",
+#            app.config["MODEL"])
 
 
 if __name__ == "__main__":
-    signal.signal(signal.SIGUSR1, signal_update_handler)
+#    signal.signal(signal.SIGUSR1, signal_update_handler)
 
     # TODO proper config
     app.config["DATA_DIR"] = "./static/data/"
-    app.config["MODEL"] = load_model("./static/model/")
+    #app.config["MODEL"] = load_model("./static/model/")
     
 
     app.config["STATE"] = {"qcm": {}, "players": {}}

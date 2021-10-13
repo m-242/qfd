@@ -2,8 +2,16 @@
 <html>
 	<head>
 		<title>QFD</title>
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
 	</head>
 	<body>
 		{% block content %}{% endblock %}
+		<div class="players_list">
+			{% for player in state.players %}
+				<div class="player_card {% if player.is_local %}local{% else %}distant{% endif %}">
+					{{ state.players[player].name }}
+				</div>
+			{% endfor %}
+		</div>
 	</body>
 </html>
