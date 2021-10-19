@@ -7,7 +7,6 @@ from helpers import (
     check_answer_result,
     generate_player_name,
     check_cookie_validity,
-    reduce_state_local_vote,
 )
 from data import read_data_from_json, generate_question
 #from update import update_songs_database, load_model

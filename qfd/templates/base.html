@@ -5,13 +5,33 @@
 		<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
 	</head>
 	<body>
-		{% block content %}{% endblock %}
-		<div class="players_list">
-			{% for player in state.players %}
-				<div class="player_card {% if player.is_local %}local{% else %}distant{% endif %}">
-					{{ state.players[player].name }}
+		<div class="nav">
+			<input type="checkbox" id="nav-check">
+			<div class="nav-header">
+				<div class="nav-title">
+					QFD
 				</div>
-			{% endfor %}
+			</div>
+			<div class="nav-btn">
+				<label for="nav-check">
+					<span></span>
+					<span></span>
+					<span></span>
+				</label>
+			</div>
+			<div class="nav-links">
+				<a href="/distant/vote">Joueur Distant</a>
+			</div>
+		</div>
+		<div class="general">
+			{% block content %}{% endblock %}
+			<div class="players_list">
+				{% for player in state.players %}
+					<div class="player_card {% if player.is_local %}local{% else %}distant{% endif %}">
+						{{ state.players[player].name }}
+					</div>
+				{% endfor %}
+			</div>
 		</div>
 	</body>
 </html>
