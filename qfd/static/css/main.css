@@ -19,9 +19,9 @@ body {
 
 .nav > .nav-header > .nav-title {
   display: inline-block;
-  font-size: 22px;
+  font-size: 1em;
   color: #fff;
-  padding: 10px 10px 10px 10px;
+  padding: .1em;
 }
 
 .nav > .nav-btn {
@@ -97,6 +97,40 @@ body {
 
 .general {
 	padding-top: 2em;
+	width: 75%;
+	margin: 0 auto;
+}
+
+/* Local votes */
+.choice_button > a {
+	display: inline-block;
+	padding: .5em;
+	text-decoration: none;
+}
+
+.choice_button_container {
+	display: flex;
+	flex-wrap: wrap;
+	flex-direction: column;
+	margin: 1em;
+}
+
+.choice_button_container .choice_button {
+	margin: .05em;
+	border: .1em solid black;
+	border-radius: .5em;
+	padding:.5em;
+	width: 100%;
+	text-align: center;
+}
+
+@media (max-width: 800) {
+	.choice_button_container {
+		flex-direction: column;
+	}
+	.choice_button_container .choice_button {
+		width: 100%;
+	}
 }
 
 /* player list */
@@ -104,6 +138,7 @@ body {
 	display: flex;  /* Remove bullet points; allow greater control of positioning */
 	flex-wrap: wrap;
 	flex-direction: row;
+	flex-grow: 1;
 	margin: 1em;
 }
 
@@ -112,7 +147,7 @@ body {
 	border: .1em solid black;
 	border-radius: .5em;
 	padding:.5em;
-	width: 20em; /* TODO limit nick size */
+	flex: 1;
 	text-align: center;
 }
 

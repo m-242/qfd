@@ -1,13 +1,11 @@
 {% extends "base.html" %}
 
 {% block content %}
+	<div class="choice_button_container">
 	{% for ans in state.qcm.answers %}
-		<input type="radio" id={{ ans.label }} name="choice" value={{ ans.label }}></input>
-		<label for={{ ans.label }}>
-			<audio controls>
-					<source src=/static/data/{{ ans.file }} type="audio/ogg">
-			</audio>
-		</label>
-
+		<div class="choice_button">
+			<a href="/local/vote_result?choice={{ ans.label }}">{{ ans.label }}</a>
+		</div>
 	{% endfor %}
+	</div>
 {% endblock %}}
