@@ -14,11 +14,12 @@ def reduce_state_local_vote(state):
     return choices
 
 
-def check_answer_result(state, answer):
+def check_answer_result(player_id, answer, state):
     """This sanitises the answer coming directly from the user and returns if
     it is the right answer or not."""
     # TODO Sanitize
-    return answer is not None and answer in state["qcm"]["correct_answer"]
+    return (answer is not None and
+    answer in state["qcm"]["correct_answers"])
 
 
 def check_cookie_validity(cookie, state):
@@ -27,7 +28,7 @@ def check_cookie_validity(cookie, state):
     return (
         cookie is not None
         and uuid.UUID(cookie) in state["players"]
-        and datetime.datetime.nom() - state["players"][uuid.UUID(cookie)]["last_active"]
+        and datetime.datetime.now() - state["players"][uuid.UUID(cookie)]["last_active"]
         > datetime.timedelta(days=1)
     )
 

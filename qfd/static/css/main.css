@@ -101,6 +101,59 @@ body {
 	margin: 0 auto;
 }
 
+/* Won/Lost + podium */
+.won, .lost{
+	padding: .5em;
+	text-align: center;
+	display: block;
+	width: 25em;
+	margin: 0 auto;
+
+}
+
+.won {
+	background: green;
+}
+
+.lost {
+	background: red;
+}
+
+.podium {
+	display: flex;
+	flex-direction: column;
+	padding: .5em;
+}
+
+.podium_title {
+	text-align: center;
+	padding: .5em;
+	background: gray;
+	width: 25em;
+	margin: 0 auto;
+}
+
+.podium_card {
+	display: flex;
+	flex-direction: row;
+	width: 25em;
+	margin: 0 auto;
+}
+
+.podium_score {
+	padding: .5em;
+	width: 5em;
+	background: gray;
+	text-align: center;
+}
+
+.podium_name {
+	padding: .5em;
+	width: 20em;
+	background: lightgray;
+	text-align: center;
+}
+
 /* Local votes */
 .choice_button > a {
 	display: inline-block;

@@ -1,0 +1,15 @@
+<div class="podium">
+<div class="podium_title">
+	Classement
+</div>
+{% for player,score in state.players.items()|sort(attribute="1.score", reverse=True) %}
+<div class="podium_card">
+	<div class="podium_score">
+		{{ state.players[player].score }}
+	</div>
+	<div class="podium_name">
+		{{ state.players[player].name }}
+	</div>
+</div>
+{% endfor %}
+</div>

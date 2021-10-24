@@ -1,5 +1,14 @@
 {% extends "base.html" %}
 
 {% block content %}
-	{{ state }}
+	{% if res %}
+	<div class="won">
+		Gagné
+	</div>
+	{% else %}
+	<div class="lost">
+		Raté
+	</div>
+	{% endif %}
+	{%include "_partials/podium.html" %}
 {% endblock %}}

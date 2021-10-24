@@ -91,18 +91,17 @@ def local_vote():
 def local_vote_result():
     """Displays the page that appears once local players have voted"""
     player_id = request.cookies.get("id")
-    if player_id is None:
+    if player_id not in app.config["STATE"]["players"]:
         app.logger.info(
             f"{request.remote_addr} hit /local_vote without having a cookie"
         )
         return "Please auth", 403
-    
-    # TODO check if already answered
-    win = check_answer_result(player_id, request.args.get("choice"), app.config["STATE"]) 
+    choice = request.args.get("choice", default="x")
+    win = check_answer_result(player_id, choice, app.config["STATE"]) 
     if win:
-        app.config["STATE"]["player"][player_id]["score"] += 10
+        app.config["STATE"]["players"][player_id]["score"] += 10
 
-    app.config["STATE"]["player"][player_id]["last_active"] = datetime.datetime.now()
+    app.config["STATE"]["players"][player_id]["last_active"] = datetime.datetime.now()
 
     try:
         return render_template(
