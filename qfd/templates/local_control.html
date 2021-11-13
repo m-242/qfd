@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="control_main">
+	<audio id="main" controls>
+		<source src="/static/data/{{ state.qcm.question.file }}">
+	</audio>
+	{% for ans in state.qcm.answers %}
+	<div class="control_play">
+		<audio id="{{ ans.label }}" controls>
+			<source src="/static/data/{{ ans.file }}">
+		</audio>
+	</div>
+	{% endfor %}
+	<script>
+	function playAllOnce() {
+		const main = document.getElementById('main');
+		const a = document.getElementById('a');
+		const b = document.getElementById('b');
+		const c = document.getElementById('c');
+
+		main.addEventListener("ended",
+			(event) => { a.play(); }
+		)
+
+		a.addEventListener("ended",
+			(event) => { b.play(); }
+		)
+
+		b.addEventListener("ended",
+			(event) => { c.play(); }
+		)
+
+		main.play();
+	}
+	
+	document.addEventListener("DOMContentLoaded", function() {
+		playAllOnce();
+	});
+	</script>
+</div>
+{% endblock %}

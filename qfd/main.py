@@ -70,6 +70,10 @@ def index():
 
     return resp
 
+@app.route("/local/control")
+def local_control():
+    """Displays the control page for local players (the TV)"""
+    return render_template("local_control.html", state=app.config["STATE"])
 
 @app.route("/local/vote")
 def local_vote():
@@ -85,7 +89,6 @@ def local_vote():
     return render_template(
         "local_vote.html", state=app.config["STATE"]
     )
-
 
 @app.route("/local/vote_result")
 def local_vote_result():
