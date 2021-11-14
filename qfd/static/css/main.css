@@ -1,5 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,500;1,100&display=swap');
+
 * {
   box-sizing: border-box;
+  font-family: 'Roboto', sans-serif;
 }
 
 body {
@@ -13,7 +16,7 @@ audio {
 .nav {
   height: 50px;
   width: 100%;
-  background-color: #4d4d4d;
+  background-color: #00A891;
   position: relative;
 }
 
@@ -233,13 +236,13 @@ audio {
 }
 
 .local_control_player_container > img {
-	width: 100%;
-	height: 100%;
+	width: 50em;
+	height: 50em;
 	align: center;
-
 }
 
 .local_control_player_container > span {
+	font-size: 5em;
 	margin: auto;
 	width: 100%;
 	text-align: center;

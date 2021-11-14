@@ -53,18 +53,19 @@ def index():
             app.logger.debug(f"distant player {id_cookie} joined back")
             return redirect(url_for("distant_vote"))
 
-    # The user is entirely new/has an expired cookie
-    player_id = str(uuid.uuid4())
-    player = {
-        "name": generate_player_name(),
-        "score": 0,
-        "last_active": datetime.datetime(1970, 1, 1),
-        "is_local": True,
-    }
-    app.config["STATE"]["players"][player_id] = player
-
-    app.logger.info("Created player {}, named {}".format(player_id, player["name"]))
-
+    else:
+        # The user is entirely new/has an expired cookie
+        player_id = str(uuid.uuid4())
+        player = {
+            "name": generate_player_name(),
+            "score": 0,
+            "last_active": datetime.datetime(1970, 1, 1),
+            "is_local": True,
+        }
+        app.config["STATE"]["players"][player_id] = player
+    
+        app.logger.info("Created player {}, named {}".format(player_id, player["name"]))
+    
     resp = make_response(redirect(url_for("local_vote")))
     resp.set_cookie("id", str(player_id))
 
