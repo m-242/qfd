@@ -2,15 +2,19 @@
 
 {% block content %}
 <div class="control_main">
+
+	<div class="local_control_player_container">
+		<img id="song_image" src="/static/data/{{ state.qcm.question.image }}"></img>
+		<span id="song_label">{{ state.qcm.question.label }}</span>
+	</div>
+
 	<audio id="main" controls>
 		<source src="/static/data/{{ state.qcm.question.file }}">
 	</audio>
 	{% for ans in state.qcm.answers %}
-	<div class="control_play">
-		<audio id="{{ ans.label }}" controls>
-			<source src="/static/data/{{ ans.file }}">
-		</audio>
-	</div>
+	<audio id="{{ ans.label }}" controls>
+		<source src="/static/data/{{ ans.file }}">
+	</audio>
 	{% endfor %}
 	<script>
 	function playAllOnce() {
@@ -20,15 +24,33 @@
 		const c = document.getElementById('c');
 
 		main.addEventListener("ended",
-			(event) => { a.play(); }
+			(event) => {
+				a.play();
+				document.getElementById('song_label').textContent = "a";
+				document.getElementById('song_image').src = "/static/data/mystery.png";
+			}
 		)
 
 		a.addEventListener("ended",
-			(event) => { b.play(); }
+			(event) => {
+				b.play();
+				document.getElementById('song_label').textContent = "b";
+			}
 		)
 
 		b.addEventListener("ended",
-			(event) => { c.play(); }
+			(event) => {
+				c.play();
+				document.getElementById('song_label').textContent = "c";
+			}
+		)
+
+		c.addEventListener("ended",
+			(event) => {
+				main.play();
+				document.getElementById('song_label').textContent = "{{ state.qcm.question.label }}";
+				document.getElementById('song_image').src = "/static/data/{{ state.qcm.question.image }}";
+			}
 		)
 
 		main.play();

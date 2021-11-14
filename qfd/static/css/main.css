@@ -6,6 +6,10 @@ body {
   margin: 0px;
 }
 
+audio {
+	display:none;
+}
+
 .nav {
   height: 50px;
   width: 100%;
@@ -218,4 +222,26 @@ body {
 	.players_list {
 		flex-direction: column;
 	}
+}
+
+
+/* local control */
+.local_control_player_container {
+	display:flex;
+	flex-wrap: nowrap;
+	flex-direction: row;
+}
+
+.local_control_player_container > img {
+	width: 100%;
+	height: 100%;
+	align: center;
+
+}
+
+.local_control_player_container > span {
+	margin: auto;
+	width: 100%;
+	text-align: center;
+	vertical-align: middle;
 }
