@@ -3,6 +3,27 @@
 	<head>
 		<title>QFD</title>
 		<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+		<script>
+		function getCookie(name) {
+			var nameEQ = name + "=";
+			var ca = document.cookie.split(';');
+			for(var i=0;i < ca.length;i++) {
+				var c = ca[i];
+				while (c.charAt(0)==' ') c = c.substring(1,c.length);
+				if (c.indexOf(nameEQ) == 0)
+					return c.substring(nameEQ.length,c.length);
+			}
+			return null;
+		}
+
+		let url = '/state';
+
+		fetch(url)
+		.then(res => res.json())
+		.then(out =>
+		  document.getElementById('nametag').innerText
+			= out["players"][getCookie("id")]["name"])
+		</script>
 	</head>
 	<body>
 		<div class="nav">
@@ -20,6 +41,7 @@
 				</label>
 			</div>
 			<div class="nav-links">
+				<span id="nametag"> name </span>
 				<a href="/distant/vote">Joueur Distant</a>
 			</div>
 		</div>

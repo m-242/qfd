@@ -43,10 +43,9 @@ def index():
     if needed, and redirects to either local_vote or distant_vote"""
     id_cookie = request.cookies.get("id")
     # The user exists
-    # Gotta play everyday to keep the cookie
     if check_cookie_validity(id_cookie, app.config["STATE"]):
-        app.config["STATE"]["players"]["last_active"] = datetime.datetime.now()
-        if app.config["STATE"]["players"]["is_local"]:
+        app.config["STATE"]["players"][id_cookie]["last_active"] = datetime.datetime.now()
+        if app.config["STATE"]["players"][id_cookie]["is_local"]:
             app.logger.debug(f"local player {uuid.UUID(id_cookie)} joined back")
             return redirect(url_for("local_vote"))
         else:
@@ -54,7 +53,7 @@ def index():
             return redirect(url_for("distant_vote"))
 
     else:
-        # The user is entirely new/has an expired cookie
+        # The user is entirely new
         player_id = str(uuid.uuid4())
         player = {
             "name": generate_player_name(),
@@ -63,9 +62,9 @@ def index():
             "is_local": True,
         }
         app.config["STATE"]["players"][player_id] = player
-    
+
         app.logger.info("Created player {}, named {}".format(player_id, player["name"]))
-    
+
     resp = make_response(redirect(url_for("local_vote")))
     resp.set_cookie("id", str(player_id))
 
@@ -88,7 +87,8 @@ def local_vote():
 
     # TODO definition in case alternative frontend
     return render_template(
-        "local_vote.html", state=app.config["STATE"]
+        "local_vote.html", state=app.config["STATE"],
+        name=app.config["STATE"]["players"][request.cookies.get("id")]["name"]
     )
 
 @app.route("/local/vote_result")
@@ -107,18 +107,11 @@ def local_vote_result():
 
     app.config["STATE"]["players"][player_id]["last_active"] = datetime.datetime.now()
 
-    try:
-        return render_template(
+    return render_template(
             "local_vote_result.html",
             state=app.config["STATE"],
             res=win,
         )
-    except:
-        # TODO proper answer
-        app.logger.warn(
-            "Got an error at local vote:\n\nrequest:{}".format(request)
-        )
-        return "brokennnnn", 404
 
 
 @app.route("/distant/vote")

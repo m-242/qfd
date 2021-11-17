@@ -25,7 +25,7 @@ def check_answer_result(player_id, answer, state):
 def check_cookie_validity(cookie, state):
     """This function gets passed an id, and the state, and returns True
     if the cookie exists, and has not expired"""
-    return (cookie is not None and uuid.UUID(cookie) in state["players"])
+    return (cookie is not None and cookie in state["players"])
 
 
 def generate_player_name():
