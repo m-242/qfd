@@ -9,7 +9,7 @@ from helpers import (
     check_cookie_validity,
 )
 from data import read_data_from_json, generate_question
-#from update import update_songs_database, load_model
+from update import update_songs_database, load_model
 
 ## Setting up a proper Flask logging
 from logging.config import dictConfig
@@ -44,7 +44,9 @@ def index():
     id_cookie = request.cookies.get("id")
     # The user exists
     if check_cookie_validity(id_cookie, app.config["STATE"]):
-        app.config["STATE"]["players"][id_cookie]["last_active"] = datetime.datetime.now()
+        app.config["STATE"]["players"][id_cookie][
+            "last_active"
+        ] = datetime.datetime.now()
         if app.config["STATE"]["players"][id_cookie]["is_local"]:
             app.logger.debug(f"local player {uuid.UUID(id_cookie)} joined back")
             return redirect(url_for("local_vote"))
@@ -70,10 +72,12 @@ def index():
 
     return resp
 
+
 @app.route("/local/control")
 def local_control():
     """Displays the control page for local players (the TV)"""
     return render_template("local_control.html", state=app.config["STATE"])
+
 
 @app.route("/local/vote")
 def local_vote():
@@ -87,9 +91,11 @@ def local_vote():
 
     # TODO definition in case alternative frontend
     return render_template(
-        "local_vote.html", state=app.config["STATE"],
-        name=app.config["STATE"]["players"][request.cookies.get("id")]["name"]
+        "local_vote.html",
+        state=app.config["STATE"],
+        name=app.config["STATE"]["players"][request.cookies.get("id")]["name"],
     )
+
 
 @app.route("/local/vote_result")
 def local_vote_result():
@@ -101,17 +107,17 @@ def local_vote_result():
         )
         return "Please auth", 403
     choice = request.args.get("choice", default="x")
-    win = check_answer_result(player_id, choice, app.config["STATE"]) 
+    win = check_answer_result(player_id, choice, app.config["STATE"])
     if win:
         app.config["STATE"]["players"][player_id]["score"] += 10
 
     app.config["STATE"]["players"][player_id]["last_active"] = datetime.datetime.now()
 
     return render_template(
-            "local_vote_result.html",
-            state=app.config["STATE"],
-            res=win,
-        )
+        "local_vote_result.html",
+        state=app.config["STATE"],
+        res=win,
+    )
 
 
 @app.route("/distant/vote")
@@ -186,21 +192,20 @@ def question_updating_thread():
 #   }
 # }
 
-#def signal_update_handler(s, f):
-#    app.logger.info("Got signal, analyzing new files...")
-#    app.config["DATA"] = update_songs_database(
-#            app.config["DATA"],
-#            app.config["DATA_DIR"] + "/new/",
-#            app.config["MODEL"])
+
+def signal_update_handler(s, f):
+    app.logger.info("Got signal, analyzing new files...")
+    app.config["DATA"] = update_songs_database(
+        app.config["DATA"], app.config["DATA_DIR"] + "/new/", app.config["MODEL"]
+    )
 
 
 if __name__ == "__main__":
-#    signal.signal(signal.SIGUSR1, signal_update_handler)
+    signal.signal(signal.SIGUSR1, signal_update_handler)
 
     # TODO proper config
     app.config["DATA_DIR"] = "./static/data/"
-    #app.config["MODEL"] = load_model("./static/model/")
-    
+    app.config["MODEL"] = load_model("./static/model/")
 
     app.config["STATE"] = {"qcm": {}, "players": {}}
 
