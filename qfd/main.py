@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from flask import Flask, redirect, url_for, request, make_response, render_template
-import uuid, datetime, threading, time, signal, os
+import uuid, datetime, threading, time, signal, os, json
 
 
 from helpers import (
@@ -196,8 +196,12 @@ def question_updating_thread():
 def signal_update_handler(s, f):
     app.logger.info("Got signal, analyzing new files...")
     app.config["DATA"] = update_songs_database(
-        app.config["DATA"], app.config["DATA_DIR"] + "/new/", app.config["MODEL"]
+        app.config["DATA"], app.config["DATA_DIR"], app.config["MODEL"]
     )
+    x = json.dumps(app.config["DATA"])
+    print(x)
+    with open("static/data/data.json", "w") as f:
+        f.write(x)
 
 
 if __name__ == "__main__":

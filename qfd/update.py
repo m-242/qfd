@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-# This file contains everything related to updating and cleaning the 
+# This file contains everything related to updating and cleaning the
 # bird songs list.
 
 import os, uuid, time
 
 import numpy as np
 import librosa
+import operator
 
 try:
     import tflite_runtime.interpreter as tflite
@@ -14,23 +15,32 @@ except:
 
 
 def update_songs_database(data, data_path, model):
-    """ This function is bound to the USR1 signal. It checks for new
-    songs, sanitizes, masters, classifies them, and writes the data.json file. """
+    """This function is bound to the USR1 signal. It checks for new
+    songs, sanitizes, masters, classifies them, and writes the data.json file."""
     # TODO logging
-    files = [f for f in os.listdir(data_path) if os.path.isfile(os.path.join(data_path, f))]
+    print(data_path)
+    files = [
+        f
+        for f in os.listdir(data_path + "/new/")
+        if os.path.isfile(os.path.join(data_path + "/new/", f))
+    ]
+    print(f"analyzing files {files}")
     for file in files:
-        specie = analyze_song(file, model)
-        if specie in data: # Do we know about this bird ?
+        print(file)
+        specie = analyze_song(data_path + "/new/" + file, model)
+        print(specie)
+        if specie in data:  # Do we know about this bird ?
             extract_name = clean_and_write(file, data_path, model)
-            data[specie]["extracts"].append(extract_name)
+            data[specie]["extracts"].append(str(extract_name))
         else:
-            os.remove(os.path.join(data_path, file))
-    
+            os.remove(os.path.join(data_path + "/new/", file))
+
     # TODO unload model
     return data
 
+
 def analyze_song(filename, model):
-    """ Reads a file and returns it's canonical name """
+    """Reads a file and returns it's canonical name"""
     # this is where machine learning happens
     c = read_audio_data(filename, 0.0)
     zz = analyze_chunks(c, model)
@@ -41,12 +51,12 @@ def analyze_song(filename, model):
 
 
 def clean_and_write(file, data_dir, interpreter):
-    """ Takes a file, cleans it, generates a uuid for it, writes
-    it in the data directory and returns the uuid """
+    """Takes a file, cleans it, generates a uuid for it, writes
+    it in the data directory and returns the uuid"""
     uid = uuid.uuid4()
     # TODO clean & master
 
-    os.rename(file, os.path.join(data_dir, str(uid)))
+    os.rename(os.path.join(data_dir + "/new/", file), os.path.join(data_dir, str(uid)))
 
     return uid
 
@@ -64,6 +74,7 @@ def read_audio_data(path, overlap=0.0, sample_rate=48000):
     print("DONE! READ", str(len(chunks)), "CHUNKS.")
 
     return chunks
+
 
 def analyze_chunks(
     chunks, interpreter, lat=-1, lon=-1, week=-1, sensitivity=1.0, overlap=0.0
@@ -104,10 +115,8 @@ def analyze_chunks(
     return max_y
 
 
-
-
 def load_model(base_path):
-    """ loads the model """
+    """loads the model"""
 
     global INPUT_LAYER_INDEX
     global OUTPUT_LAYER_INDEX
@@ -117,7 +126,9 @@ def load_model(base_path):
     print("LOADING TF LITE MODEL...", end=" ")
 
     # Load TFLite model and allocate tensors.
-    interpreter = tflite.Interpreter(model_path=os.path.join(base_path, "BirdNET_6K_GLOBAL_MODEL.tflite"))
+    interpreter = tflite.Interpreter(
+        model_path=os.path.join(base_path, "BirdNET_6K_GLOBAL_MODEL.tflite")
+    )
     interpreter.allocate_tensors()
 
     # Get input and output tensors.
@@ -139,6 +150,7 @@ def load_model(base_path):
 
     return interpreter
 
+
 def splitSignal(sig, rate, overlap, seconds=3.0, minlen=1.5):
 
     # Split signal with overlap
@@ -159,6 +171,7 @@ def splitSignal(sig, rate, overlap, seconds=3.0, minlen=1.5):
         sig_splits.append(split)
 
     return sig_splits
+
 
 def convertMetadata(m):
 
@@ -206,6 +219,3 @@ def predict(sample, interpreter, sensitivity):
 
     # Only return first the top ten results
     return p_sorted[:10]
-
-
-
